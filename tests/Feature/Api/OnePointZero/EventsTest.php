@@ -5,6 +5,7 @@ namespace Tests\Feature\Api\OnePointZero;
 use App\Event;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class EventsTest extends TestCase
@@ -79,5 +80,66 @@ class EventsTest extends TestCase
                 'name' => $event->venue->name,
             ]
         ]);
+    }
+
+    /** @test */
+    public function post_request_on_events_endpoint_with_valid_data_creates_an_event(): void
+    {
+        $event = factory(Event::class)->make();
+        $eventRequestData = $this->buildCreateRequestDataFromEvent($event);
+
+        $response = $this->json(
+            'POST',
+            '/api/1.0/events',
+            $eventRequestData
+        );
+
+        $lastCreatedEvent = Event::orderBy('id', 'desc')->firstOrFail();
+        $this->assertEquals($event->name, $lastCreatedEvent->name);
+        $this->assertEquals($event->slug, $lastCreatedEvent->slug);
+    }
+
+    /** @test */
+    public function post_request_on_events_endpoint_with_valid_data_returns_201_response(): void
+    {
+        $event = factory(Event::class)->make();
+        $eventRequestData = $this->buildCreateRequestDataFromEvent($event);
+
+        $response = $this->json(
+            'POST',
+            '/api/1.0/events',
+            $eventRequestData
+        );
+
+        $response->assertStatus(201);
+    }
+
+    /** @test */
+    public function post_request_on_events_endpoint_with_valid_data_returns_event_data_in_response(): void
+    {
+        $event = factory(Event::class)->make();
+        $eventRequestData = $this->buildCreateRequestDataFromEvent($event);
+
+        $response = $this->json(
+            'POST',
+            '/api/1.0/events',
+            $eventRequestData
+        );
+
+        $response->assertJsonFragment(
+            (new \App\Http\Resources\Event($event))->toArray(new Request())
+        );
+    }
+
+    protected function buildCreateRequestDataFromEvent(Event $event): array
+    {
+        return [
+            'name' => $event->name,
+            'slug' => $event->slug,
+            'description' => $event->description,
+            'venue_id' => $event->venue_id,
+            'starts_at' => $event->starts_at->format('Y-m-d H:i:s'),
+            'ends_at' => $event->ends_at->format('Y-m-d H:i:s')
+        ];
     }
 }
