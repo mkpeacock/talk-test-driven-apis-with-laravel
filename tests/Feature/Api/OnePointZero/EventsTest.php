@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\OnePointZero;
 
+use App\Event;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
@@ -30,5 +31,17 @@ class EventsTest extends TestCase
         $response = $this->json('GET', '/api/1.0/events');
         $response->assertHeader('Content-Type', 'application/json');
         $response->assertJson([]);
+    }
+
+    /** @test */
+    public function get_request_on_events_endpoint_contains_event_data(): void
+    {
+        $event = factory(Event::class)->create();
+        $response = $this->json('GET', '/api/1.0/events');
+
+        $response->assertJsonFragment([
+            'name' => $event->name,
+            'description' => $event->description,
+        ]);
     }
 }
