@@ -166,11 +166,7 @@ class EventsTest extends TestCase
             $eventRequestData
         );
 
-        $response->assertJsonStructure([
-            'errors' => [
-                $field,
-            ]
-        ]);
+        $response->assertJsonValidationErrors($field);
     }
 
     public function requiredFields(): array
