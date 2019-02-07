@@ -11,6 +11,11 @@ class Event extends Model
 
     public $table = 'events';
 
+    protected $dates = [
+        'starts_at',
+        'ends_at',
+    ];
+
     public function talks()
     {
         return $this->hasMany(Talk::class);
