@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Event;
+use App\Http\Requests\CreateEventRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -16,8 +17,8 @@ class EventsController extends Controller
             Event::all()
         );
     }
-    
-    public function store(Request $request)
+
+    public function store(CreateEventRequest $request)
     {
         $event = new Event();
         $event->name = $request->name;
