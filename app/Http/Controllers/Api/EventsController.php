@@ -8,14 +8,10 @@ use App\Http\Controllers\Controller;
 
 class EventsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        return Event::all();
     }
 
     /**
