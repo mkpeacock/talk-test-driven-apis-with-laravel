@@ -150,6 +150,29 @@ class EventsTest extends TestCase
         $response->assertStatus(422);
     }
 
+    /**
+     * @test
+     * @dataProvider requiredFields
+     */
+    public function post_request_on_events_endpoint_with_required_field_missing_returns_suitable_error_in_response($field): void
+    {
+        $event = factory(Event::class)->make();
+        $eventRequestData = $this->buildCreateRequestDataFromEvent($event);
+        unset($eventRequestData[$field]);
+
+        $response = $this->json(
+            'POST',
+            '/api/1.0/events',
+            $eventRequestData
+        );
+
+        $response->assertJsonStructure([
+            'errors' => [
+                $field,
+            ]
+        ]);
+    }
+
     public function requiredFields(): array
     {
         return [
