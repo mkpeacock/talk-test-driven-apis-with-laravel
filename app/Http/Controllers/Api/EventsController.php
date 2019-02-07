@@ -11,7 +11,9 @@ class EventsController extends Controller
 
     public function index()
     {
-        return Event::all();
+        return \App\Http\Resources\Event::collection(
+            Event::all()
+        );
     }
 
     /**
