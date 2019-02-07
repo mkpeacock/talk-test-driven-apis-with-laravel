@@ -131,6 +131,37 @@ class EventsTest extends TestCase
         );
     }
 
+    /**
+     * @test
+     * @dataProvider requiredFields
+     */
+    public function post_request_on_events_endpoint_with_required_field_missing_returns_422_response($field): void
+    {
+        $event = factory(Event::class)->make();
+        $eventRequestData = $this->buildCreateRequestDataFromEvent($event);
+        unset($eventRequestData[$field]);
+
+        $response = $this->json(
+            'POST',
+            '/api/1.0/events',
+            $eventRequestData
+        );
+
+        $response->assertStatus(422);
+    }
+
+    public function requiredFields(): array
+    {
+        return [
+            'name' => ['name'],
+           'slug' =>  ['slug'],
+            'venue id' => ['venue_id'],
+            'description' => ['description'],
+            'starts at' => ['starts_at'],
+            'ends at' => ['ends_at'],
+        ];
+    }
+
     protected function buildCreateRequestDataFromEvent(Event $event): array
     {
         return [
