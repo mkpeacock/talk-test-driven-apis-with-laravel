@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Event;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -15,16 +16,19 @@ class EventsController extends Controller
             Event::all()
         );
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(Request $request)
     {
-        //
+        $event = new Event();
+        $event->name = $request->name;
+        $event->slug = $request->slug;
+        $event->description = $request->description;
+        $event->starts_at = new Carbon($request->starts_at);
+        $event->ends_at = new Carbon($request->ends_at);
+        $event->venue_id = $request->venue_id;
+        $event->save();
+
+        return (new \App\Http\Resources\Event($event))->response()->setStatusCode(201);
     }
 
     /**
