@@ -44,4 +44,40 @@ class EventsTest extends TestCase
             'description' => $event->description,
         ]);
     }
+
+    /** @test */
+    public function get_request_on_events_endpoint_does_not_contain_event_id(): void
+    {
+        $event = factory(Event::class)->create();
+        $response = $this->json('GET', '/api/1.0/events');
+
+        $response->assertJsonMissing([
+            'id' => $event->id,
+        ]);
+    }
+
+    /** @test */
+    public function get_request_on_events_endpoint_includes_formatted_dates(): void
+    {
+        $event = factory(Event::class)->create();
+        $response = $this->json('GET', '/api/1.0/events');
+
+        $response->assertJsonFragment([
+            'starts_at' => $event->starts_at->toIso8601String(),
+            'ends_at' => $event->ends_at->toIso8601String(),
+        ]);
+    }
+
+    /** @test */
+    public function get_request_on_events_endpoint_contains_venue_data_within_event(): void
+    {
+        $event = factory(Event::class)->create();
+        $response = $this->json('GET', '/api/1.0/events');
+
+        $response->assertJsonFragment([
+            'venue' => [
+                'name' => $event->venue->name,
+            ]
+        ]);
+    }
 }
